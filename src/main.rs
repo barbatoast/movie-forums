@@ -10,7 +10,7 @@ struct Search {
     search: String,
 }
 
-#[derive(Debug, PartialEq, Eq, FromRow, Serialize)]
+#[derive(Debug, FromRow, Serialize)]
 struct Movie {
     id: u32,
     film: String,
