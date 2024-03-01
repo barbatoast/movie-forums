@@ -17,6 +17,7 @@ struct Movie {
     genre: String,
     studio: String,
     score: u32,
+    profitability: f32,
     rotten_score: u32,
     gross: u32,
     year: u32,
@@ -40,9 +41,10 @@ async fn get_movies(search : Query<Search>) -> Json<Vec<Movie>> {
 
 async fn find_movies(search: &str) -> Vec<Movie> {
     let db = SqlitePool::connect(DB_URL).await.unwrap();
-    let query = format!("select id, film, genre, studio, score, rotten_score, gross, year
+    let query = format!("select id, film, genre, studio,
+        score, profitability, rotten_score, gross, year
         from movies
-        where film like '%{}%'", 
+        where film like '%{}%'",
         search);
     sqlx::query_as::<_, Movie>(&query)
         .fetch_all(&db)
