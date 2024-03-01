@@ -1,0 +1,12 @@
+[package]
+name = "movies-backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.6.20", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+sqlx = { version = "0.7.0", features = ["runtime-tokio-native-tls", "sqlite"] }
+tokio = { version = "1.0", features = ["full"] }
