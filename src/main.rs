@@ -1,4 +1,4 @@
-use axum::{ extract::Query, routing::get, Router, Json };
+use axum::{ extract::Query, response::Html, routing::get, Router, Json };
 use serde::{ Deserialize, Serialize };
 use sqlx::{FromRow, SqlitePool};
 use std::net::SocketAddr;
@@ -25,13 +25,19 @@ struct Movie {
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/movies", get(get_movies));
+    let app = Router::new()
+        .route("/", get(home))
+        .route("/movies", get(get_movies));
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn home() -> Html<&'static str> {
+    Html(include_str!("../index.html"))
 }
 
 async fn get_movies(search : Query<Search>) -> Json<Vec<Movie>> {
