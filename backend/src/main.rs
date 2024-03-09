@@ -2,6 +2,7 @@ use axum::{ extract::Query, response::Html, routing::get, Router, Json };
 use serde::{ Deserialize, Serialize };
 use sqlx::{FromRow, SqlitePool};
 use std::net::SocketAddr;
+use tower_http::services::ServeDir;
 
 const DB_URL: &str = "sqlite://db.sqlite3";
 
@@ -27,7 +28,8 @@ struct Movie {
 async fn main() {
     let app = Router::new()
         .route("/", get(home))
-        .route("/movies", get(get_movies));
+        .route("/movies", get(get_movies))
+        .nest_service("/assets", ServeDir::new("assets"));
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
 
     axum::Server::bind(&addr)
