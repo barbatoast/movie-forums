@@ -2,7 +2,7 @@ use axum::{ extract::Query, response::Html, routing::get, Router, Json };
 use serde::{ Deserialize, Serialize };
 use sqlx::{FromRow, SqlitePool};
 use std::net::SocketAddr;
-use tower_http::services::ServeDir;
+use tower_http::{ cors::CorsLayer, services::ServeDir };
 
 const DB_URL: &str = "sqlite://db.sqlite3";
 
@@ -29,7 +29,8 @@ async fn main() {
     let app = Router::new()
         .route("/", get(home))
         .route("/movies", get(get_movies))
-        .nest_service("/assets", ServeDir::new("assets"));
+        .nest_service("/assets", ServeDir::new("assets"))
+        .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
 
     axum::Server::bind(&addr)
