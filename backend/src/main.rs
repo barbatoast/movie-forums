@@ -1,8 +1,8 @@
-use axum::{ extract::Query, response::Html, routing::get, Router, Json };
+use axum::{ extract::Query, routing::get, Router, Json };
 use serde::{ Deserialize, Serialize };
 use sqlx::{FromRow, SqlitePool};
 use std::net::SocketAddr;
-use tower_http::{ cors::CorsLayer, services::ServeDir };
+use tower_http::cors::CorsLayer;
 
 const DB_URL: &str = "sqlite://db.sqlite3";
 
@@ -27,9 +27,7 @@ struct Movie {
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/", get(home))
         .route("/movies", get(get_movies))
-        .nest_service("/assets", ServeDir::new("assets"))
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
 
@@ -39,9 +37,6 @@ async fn main() {
         .unwrap();
 }
 
-async fn home() -> Html<&'static str> {
-    Html(include_str!("../index.html"))
-}
 
 async fn get_movies(search : Query<Search>) -> Json<Vec<Movie>> {
     let result = find_movies(&search.search).await;
